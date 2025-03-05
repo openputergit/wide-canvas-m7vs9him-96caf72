@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Visitor Management System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .camera-preview {
+            transform: scaleX(-1);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Login Section -->
+    <div id="loginSection" class="min-h-screen flex items-center justify-center">
+        <div class="bg-white p-8 rounded-lg shadow-md w-96">
+            <h2 class="text-2xl font-bold text-center mb-6 text-gray-800">Smart Visitor Management</h2>
+            <form id="loginForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Username</label>
+                    <input type="text" id="username" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Password</label>
+                    <input type="password" id="password" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border" required>
+                </div>
+                <button type="submit" class="w-full bg-blue-600 text-white rounded-md py-2 hover:bg-blue-700 transition duration-200">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Dashboard -->
+    <div id="dashboard" class="hidden min-h-screen bg-gray-50">
+        <nav class="bg-white shadow-md">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between h-16 items-center">
+                    <div class="flex-shrink-0">
+                        <h1 class="text-xl font-bold text-gray-800">Visitor Management</h1>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <span id="userRole" class="text-sm text-gray-600"></span>
+                        <button onclick="logout()" class="text-gray-600 hover:text-gray-800">
+                            <i class="bi bi-box-arrow-right text-xl"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Visitor Entry Form -->
+        <div class="max-w-4xl mx-auto mt-8 p-6 bg-white rounded-lg shadow-md">
+            <h2 class="text-xl font-semibold mb-6">New Visitor Entry</h2>
+            <form id="visitorForm" class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Visitor's Name</label>
+                        <input type="text" id="visitorName" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Contact Number</label>
+                        <input type="tel" id="contactNumber" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Purpose</label>
+                        <input type="text" id="purpose" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Whom to Meet</label>
+                        <select id="whomToMeet" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border" required>
+                            <option value="">Select Person</option>
+                            <option value="hod-cse">HOD - CSE</option>
+                            <option value="hod-ece">HOD - ECE</option>
+                            <option value="principal">Principal</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="flex items-center">
+                        <input type="checkbox" id="withVehicle" class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        <label class="ml-2 text-sm text-gray-700">With Vehicle</label>
+                    </div>
+                    <div class="flex items-center">
+                        <input type="checkbox" id="lunchRequired" class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        <label class="ml-2 text-sm text-gray-700">Lunch Required</label>
+                    </div>
+                    <div class="flex items-center">
+                        <input type="checkbox" id="internetRequired" class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        <label class="ml-2 text-sm text-gray-700">Internet Required</label>
+                    </div>
+                </div>
+
+                <!-- Camera Section -->
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Visitor's Photo</label>
+                        <div class="mt-2 flex flex-col items-center space-y-4">
+                            <video id="cameraPreview" class="camera-preview w-64 h-48 bg-gray-100 rounded hidden"></video>
+                            <img id="capturedImage" class="w-64 h-48 bg-gray-100 rounded hidden object-cover">
+                            <div class="flex space-x-4">
+                                <button type="button" onclick="startCamera()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" id="startCameraBtn">
+                                    <i class="bi bi-camera-fill mr-2"></i>Start Camera
+                                </button>
+                                <button type="button" onclick="capturePhoto()" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 hidden" id="captureBtn">
+                                    <i class="bi bi-camera mr-2"></i>Capture
+                                </button>
+                                <button type="button" onclick="retakePhoto()" class="bg-yellow-600 text-white px-4 py-2 rounded hover:bg-yellow-700 hidden" id="retakeBtn">
+                                    <i class="bi bi-arrow-clockwise mr-2"></i>Retake
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-end">
+                    <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition duration-200">
+                        Submit Entry
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let stream = null;
+        let userRole = '';
+
+        // Login Handler
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                // Simulate API call - Replace with actual API endpoint
+                // const response = await fetch('http://your-api/login', {
+                //     method: 'POST',
+                //     headers: { 'Content-Type': 'application/json' },
+                //     body: JSON.stringify({ username, password })
+                // });
+                
+                // Simulate successful login
+                userRole = username.includes('hod') ? 'HOD' : 'Gatekeeper';
+                document.getElementById('userRole').textContent = `Logged in as: ${userRole}`;
+                document.getElementById('loginSection').classList.add('hidden');
+                document.getElementById('dashboard').classList.remove('hidden');
+            } catch (error) {
+                alert('Login failed. Please try again.');
+            }
+        });
+
+        // Camera Functions
+        async function startCamera() {
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                const videoElement = document.getElementById('cameraPreview');
+                videoElement.srcObject = stream;
+                videoElement.play();
+                
+                document.getElementById('cameraPreview').classList.remove('hidden');
+                document.getElementById('captureBtn').classList.remove('hidden');
+                document.getElementById('startCameraBtn').classList.add('hidden');
+            } catch (error) {
+                alert('Error accessing camera: ' + error.message);
+            }
+        }
+
+        function capturePhoto() {
+            const video = document.getElementById('cameraPreview');
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+            
+            document.getElementById('capturedImage').src = canvas.toDataURL('image/png');
+            document.getElementById('capturedImage').classList.remove('hidden');
+            document.getElementById('cameraPreview').classList.add('hidden');
+            document.getElementById('captureBtn').classList.add('hidden');
+            document.getElementById('retakeBtn').classList.remove('hidden');
+            
+            stopCamera();
+        }
+
+        function retakePhoto() {
+            document.getElementById('capturedImage').classList.add('hidden');
+            document.getElementById('retakeBtn').classList.add('hidden');
+            startCamera();
+        }
+
+        function stopCamera() {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+            }
+        }
+
+        // Form Submission
+        document.getElementById('visitorForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = {
+                name: document.getElementById('visitorName').value,
+                contact: document.getElementById('contactNumber').value,
+                purpose: document.getElementById('purpose').value,
+                whomToMeet: document.getElementById('whomToMeet').value,
+                withVehicle: document.getElementById('withVehicle').checked,
+                lunchRequired: document.getElementById('lunchRequired').checked,
+                internetRequired: document.getElementById('internetRequired').checked,
+                photo: document.getElementById('capturedImage').src
+            };
+
+            try {
+                // Simulate API call - Replace with actual API endpoint
+                // const response = await fetch('http://your-api/visitors', {
+                //     method: 'POST',
+                //     headers: { 'Content-Type': 'application/json' },
+                //     body: JSON.stringify(formData)
+                // });
+                
+                alert('Visitor entry submitted successfully!');
+                e.target.reset();
+                document.getElementById('capturedImage').classList.add('hidden');
+                document.getElementById('retakeBtn').classList.add('hidden');
+                document.getElementById('startCameraBtn').classList.remove('hidden');
+            } catch (error) {
+                alert('Error submitting form: ' + error.message);
+            }
+        });
+
+        function logout() {
+            stopCamera();
+            document.getElementById('dashboard').classList.add('hidden');
+            document.getElementById('loginSection').classList.remove('hidden');
+            document.getElementById('loginForm').reset();
+        }
+    </script>
+<script>document.body.addEventListener('wheel', e => { if (!e.ctrlKey) return; e.preventDefault(); return }, { passive: false })</script>
+	</body>
+</html>
